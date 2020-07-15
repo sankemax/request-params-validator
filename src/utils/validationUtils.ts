@@ -13,7 +13,7 @@ export const authTokenRegex = /^Bearer (?:[0-9a-zA-Z])$/
 export const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 export function validationErrorMessage(expectedType: string, value: string): string {
-    const gotType = getParamType(expectedType);
+    const gotType = getParamType(value);
     return `Expected type ${expectedType}. Got type ${gotType} for value: ${value}.`;
 }
 
@@ -30,11 +30,11 @@ export function getParamType(param: any): string {
 
     const stringCheck = [
 
+        stringValidator(),
         dateValidator(),
         emailValidator(),
         uuidValidator(),
         authTokenValidator(),
-        stringValidator(),
 
     ].reduce(validationReducer(param), initialValue);
 
