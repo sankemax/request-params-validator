@@ -19,6 +19,10 @@ export interface Validation {
     errors: ValidationError[]
 }
 
+export interface Verdict extends Validation {
+    valid: boolean
+}
+
 export interface ValidationError extends TypeError, MissingParamError, IdError {}
 
 export interface ValidatorFn {

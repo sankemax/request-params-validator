@@ -4,6 +4,7 @@ exports[`validation tests requests should be validated against the appropriate m
 Array [
   Object {
     "errors": Array [],
+    "valid": true,
   },
   Object {
     "errors": Array [
@@ -12,15 +13,19 @@ Array [
         "path": "/users/info-GET.headers",
       },
     ],
+    "valid": false,
   },
   Object {
     "errors": Array [],
+    "valid": true,
   },
   Object {
     "errors": Array [],
+    "valid": true,
   },
   Object {
     "errors": Array [],
+    "valid": true,
   },
   Object {
     "errors": Array [
@@ -29,9 +34,11 @@ Array [
         "path": "/users/create-POST.body",
       },
     ],
+    "valid": false,
   },
   Object {
     "errors": Array [],
+    "valid": true,
   },
   Object {
     "errors": Array [
@@ -44,12 +51,15 @@ Array [
         "path": "/users/create-POST.body.email",
       },
     ],
+    "valid": false,
   },
   Object {
     "errors": Array [],
+    "valid": true,
   },
   Object {
     "errors": Array [],
+    "valid": true,
   },
   Object {
     "errors": Array [
@@ -62,9 +72,11 @@ Array [
         "path": "/orders/info-GET.query_params.order_id",
       },
     ],
+    "valid": false,
   },
   Object {
     "errors": Array [],
+    "valid": true,
   },
   Object {
     "errors": Array [
@@ -73,6 +85,7 @@ Array [
         "path": "/orders/create-POST.body.order_type",
       },
     ],
+    "valid": false,
   },
   Object {
     "errors": Array [
@@ -85,9 +98,11 @@ Array [
         "path": "/orders/create-POST.body.items",
       },
     ],
+    "valid": false,
   },
   Object {
     "errors": Array [],
+    "valid": true,
   },
   Object {
     "errors": Array [
@@ -96,9 +111,11 @@ Array [
         "path": "/orders/update-PATCH.body",
       },
     ],
+    "valid": false,
   },
   Object {
     "errors": Array [],
+    "valid": true,
   },
   Object {
     "errors": Array [
@@ -107,6 +124,7 @@ Array [
         "path": "/orders/update-PATCH.body.order_type",
       },
     ],
+    "valid": false,
   },
 ]
 `;

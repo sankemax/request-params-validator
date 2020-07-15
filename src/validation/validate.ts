@@ -1,4 +1,4 @@
-import { Obj, Validation, ValidationObj, ObjectValue, Predicate, ValidatorFn, ValidationError } from "../models/types";
+import { Obj, Validation, ValidationObj, ObjectValue, Predicate, ValidatorFn, ValidationError, Verdict } from "../models/types";
 import { getId } from "../utils/schemaUtil";
 import { Schema } from "../models/Schema";
 import { reduceValidationErrors, validationErrorMessage, requiredFieldErrorMessage, generateValidatorFnsMap } from "../utils/validationUtils";
@@ -14,7 +14,7 @@ import { Datastore } from "../models/Datastore";
  * @param request the object that is being validated
  */
 export function validateObject(store: Datastore) {
-    return async function withDependencies(request: Obj): Promise<Validation> {
+    return async function withDependencies(request: Obj): Promise<Verdict> {
         try {
             const id = getId(request.path, request.method);
             const schema: Schema = await store.load(id);
@@ -25,9 +25,16 @@ export function validateObject(store: Datastore) {
                 .map(root => validateRoot(`${schema.path}-${schema.method}.${root}`, schema[root], request[root]))
                 .reduce(reduceValidationErrors, { errors: [] })
 
-            return { errors: [...requiredRootFieldErrors, ...validationResults] }
+
+            return {
+                valid: requiredRootFieldErrors.length || validationResults.length ? false : true,
+                errors: [...requiredRootFieldErrors, ...validationResults]
+            }
         } catch (error) {
-            return { errors: [{ message: error.message, path: '' }] }
+            return {
+                valid: false,
+                errors: [{ message: error.message, path: '' }]
+            }
         }
     }
 
@@ -80,7 +87,9 @@ function validateRoot(rootPath: string, validationArray: ValidationObj[], objPar
         .filter(validationObj => requestParamsMap.has(validationObj.name))
         .flatMap(validateSingleObject(requestParamsMap, rootPath));
 
-    return { errors: [...requiredFieldErrors, ...validationErrors] };
+    return {
+        errors: [...requiredFieldErrors, ...validationErrors]
+    }
 }
 
 function validateRequiredFields(requestParamsMap: Map<string, any>, rootPath: string) {
