@@ -96,37 +96,24 @@ function validateSingleObject(requestParamsMap: Map<string, any>, rootPath: stri
     return function withMetadata(validationObj: ValidationObj): ValidationError[] {
         const validationFns = relevantValidationFn(validationObj.types);
         const value = requestParamsMap.get(validationObj.name);
-        const validations = validationFns.reduce(
-            accumulateValidations(rootPath, value, validationObj),
-            { errors: [], valid: false }
-        );
+        const validations = validationFns
+            .map(validator => ({ name: validator.name, valid: validator.fn(value) }))
 
-        return validations.valid ? [] : validations.errors;
+        const isValid = validations.filter(validated => validated.valid).length > 0;
+
+        if (isValid) {
+            return [];
+        }
+
+        return validations
+            .filter(validation => !validation.valid)
+            .flatMap(validation => {
+                const path = `${rootPath}.${validationObj.name}`;
+                const message = validationErrorMessage(validation.name, value);
+                return [{ path, message, }];
+            })
     }
 }
-
-function accumulateValidations(rootPath: string, value: any, validationObj: ValidationObj) {
-    return function withMetadata(acc: Validation & { valid: boolean }, validationFn: ValidatorFn): Validation & { valid: boolean } {
-        if (acc.valid) {
-            return acc;
-        }
-
-        if (validationFn.fn(value)) {
-            return {
-                valid: true,
-                errors: [],
-            }
-        }
-
-        const path = `${rootPath}.${validationObj.name}`;
-        const message = validationErrorMessage(validationFn.name);
-        return {
-            valid: false,
-            errors: [...acc.errors, { path, message, }],
-        }
-    }
-}
-
 
 const validatorFnsMap = generateValidatorFnsMap();
 /**

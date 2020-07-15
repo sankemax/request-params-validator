@@ -12,9 +12,9 @@ export const authTokenRegex = /^Bearer (?:[0-9a-zA-Z])$/
 // this was pasted from stack-overflow
 export const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
-export function validationErrorMessage(expectedType: string): string {
+export function validationErrorMessage(expectedType: string, value: string): string {
     const gotType = getParamType(expectedType);
-    return `Expected type ${expectedType}. Got ${gotType}.`;
+    return `Expected type ${expectedType}. Got type ${gotType} for value: ${value}.`;
 }
 
 export function requiredFieldErrorMessage(expectedField: string): string {
@@ -28,7 +28,6 @@ export function reduceValidationErrors(acc: Validation, validationResult: Valida
 export function getParamType(param: any): string {
     const initialValue = { validated: false, type: '' };
 
-    // string type checks: to test for specific string types *before* string validator is run
     const stringCheck = [
 
         dateValidator(),
@@ -54,7 +53,7 @@ export function getParamType(param: any): string {
     return additionalChecks.validated ? additionalChecks.type : 'UNKNOWN TYPE'
 }
 
-function validationReducer(param: any) { // TODO: fix this reducer
+function validationReducer(param: any) {
     return function withParam(check: { validated: boolean, type: string }, validator: ValidatorFn) {
         return check.validated
             ? check
