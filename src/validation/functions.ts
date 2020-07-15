@@ -54,3 +54,10 @@ export function authTokenValidator(): ValidatorFn {
             && authTokenRegex.test(validate),
     }
 }
+
+export function listValidator(): ValidatorFn {
+    return {
+        name: 'List',
+        fn: (validate: any) => Array.isArray(validate)
+    }
+}

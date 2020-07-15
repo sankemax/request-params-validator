@@ -8,14 +8,18 @@ class MapDatastore implements Datastore {
     store = new Map();
 
     async insert(schema: Schema): Promise<ID> {
-        const id = generateIdBySchema(schema);
-        this.store.set(id, schema);
-        return id;
+        try {
+            const id = generateIdBySchema(schema);
+            this.store.set(id, schema);
+            return id;
+        } catch (error) {
+            return 'error';
+        }
     }
 
     async load(id: ID): Promise<Schema> {
         if (!this.store.has(id)) {
-            throw new Error('schema does not exist');
+            throw new Error(`schema does not exist: ${id}`);
         }
 
         return this.store.get(id);

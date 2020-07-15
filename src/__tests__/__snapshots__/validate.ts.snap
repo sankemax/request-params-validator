@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`validation tests requests should be validated against the appropriate models 1`] = `undefined`;

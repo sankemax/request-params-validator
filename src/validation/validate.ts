@@ -1,9 +1,8 @@
-import { stringValidator, intValidator, dateValidator } from "./functions";
 import { Obj, Validation, ValidationObj, ObjectValue, Predicate, ValidatorFn, ValidationError } from "../models/types";
-import store from "../store/MapDatastore";
 import { getId } from "../utils/schemaUtil";
 import { Schema } from "../models/Schema";
-import { reduceValidationErrors, validationErrorMessage, requiredFieldErrorMessage } from "../utils/validationUtils";
+import { reduceValidationErrors, validationErrorMessage, requiredFieldErrorMessage, generateValidatorFnsMap } from "../utils/validationUtils";
+import { Datastore } from "../models/Datastore";
 
 /**
  * Primary validation logic: here one can add more principal validation types
@@ -14,21 +13,24 @@ import { reduceValidationErrors, validationErrorMessage, requiredFieldErrorMessa
  *  pre processing of request object: enrich from other sources, etc.
  * @param request the object that is being validated
  */
-export async function validateObject(request: Obj): Promise<Validation> {
-    try {
-        const id = getId(request.path, request.method);
-        const schema: Schema = await store.load(id);
+export function validateObject(store: Datastore) {
+    return async function withDependencies(request: Obj): Promise<Validation> {
+        try {
+            const id = getId(request.path, request.method);
+            const schema: Schema = await store.load(id);
 
-        const { errors: requiredRootFieldErrors, existing: rootsToValidate } = requiredRootFields(schema, request);
+            const { errors: requiredRootFieldErrors, existing: rootsToValidate } = requiredRootFields(schema, request);
 
-        const { errors: validationResults } = rootsToValidate
-            .map(root => validateRoot(root, schema[root], request[root]))
-            .reduce(reduceValidationErrors, { errors: [] })
+            const { errors: validationResults } = rootsToValidate
+                .map(root => validateRoot(`${schema.path}-${schema.method}.${root}`, schema[root], request[root]))
+                .reduce(reduceValidationErrors, { errors: [] })
 
-        return { errors: [...requiredRootFieldErrors, ...validationResults] }
-    } catch (error) {
-        return { errors: [{ message: error.message, path: '' }] }
+            return { errors: [...requiredRootFieldErrors, ...validationResults] }
+        } catch (error) {
+            return { errors: [{ message: error.message, path: '' }] }
+        }
     }
+
 }
 
 /**
@@ -50,8 +52,8 @@ function requiredRootFields(schema: Schema, request: Obj): Validation & { existi
         .filter(requiredRoot => !missingRoots.includes(requiredRoot));
 
     return {
-        errors: missingRoots.map(rootKey => ({ message: `missing root key ${rootKey}`, path: rootKey })),
-        existing: rootsToValidate,
+        errors: missingRoots.map(rootKey => ({ message: `missing root key ${rootKey}`, path: `${schema.path}-${schema.method}` })),
+        existing: rootsToValidate.filter(toValidate => toValidate.toLowerCase() != 'path' && toValidate.toLowerCase() != 'method'),
     }
 }
 
@@ -93,7 +95,7 @@ function validateRequiredFields(requestParamsMap: Map<string, any>, rootPath: st
 function validateSingleObject(requestParamsMap: Map<string, any>, rootPath: string) {
     return function withMetadata(validationObj: ValidationObj): ValidationError[] {
         const validationFns = relevantValidationFn(validationObj.types);
-        const value = requestParamsMap.get(validateObject.name);
+        const value = requestParamsMap.get(validationObj.name);
         const validations = validationFns.reduce(
             accumulateValidations(rootPath, value, validationObj),
             { errors: [], valid: false }
@@ -125,6 +127,8 @@ function accumulateValidations(rootPath: string, value: any, validationObj: Vali
     }
 }
 
+
+const validatorFnsMap = generateValidatorFnsMap();
 /**
  * the assumption is that the validation function always exists.
  * if needed, a default function can be returned which emits an
@@ -137,12 +141,3 @@ function relevantValidationFn(types: string[]): ValidatorFn[] {
         fn: validatorFnsMap.get(type) as Predicate,
     }));
 }
-
-export const validatorFnsMap: Map<string, Predicate> = [
-    stringValidator(),
-    intValidator(),
-    dateValidator(),
-].reduce(
-    (validatorsMap, validatorFunc) => validatorsMap.set(validatorFunc.name, validatorFunc.fn),
-    new Map()
-)

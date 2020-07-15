@@ -1,5 +1,5 @@
-import { dateValidator, stringValidator, booleanValidator, intValidator, emailValidator, uuidValidator, authTokenValidator } from "../validation/functions";
-import { Validation, ValidatorFn } from "../models/types";
+import { dateValidator, stringValidator, booleanValidator, intValidator, emailValidator, uuidValidator, authTokenValidator, listValidator } from "../validation/functions";
+import { Validation, ValidatorFn, Predicate } from "../models/types";
 
 // best if validations were made with a designated library, but this is enough for DEV
 // UUID - a guid composed of dashes (-), numbers and English letters (example: “46da6390-7c78-4a1c-9efa-7c0396067ce4”)
@@ -47,16 +47,33 @@ export function getParamType(param: any): string {
 
         booleanValidator(),
         intValidator(),
+        listValidator(),
 
     ].reduce(validationReducer(param), initialValue);
 
     return additionalChecks.validated ? additionalChecks.type : 'UNKNOWN TYPE'
 }
 
-function validationReducer(param: any) {
+function validationReducer(param: any) { // TODO: fix this reducer
     return function withParam(check: { validated: boolean, type: string }, validator: ValidatorFn) {
         return check.validated
             ? check
             : { validated: validator.fn(param), type: validator.name };
     }
+}
+
+export function generateValidatorFnsMap(): Map<string, Predicate> {
+    return new Map(
+        [
+            stringValidator(),
+            intValidator(),
+            dateValidator(),
+            booleanValidator(),
+            emailValidator(),
+            uuidValidator(),
+            authTokenValidator(),
+            listValidator(),
+        ]
+            .map(obj => [obj.name, obj.fn])
+    )
 }
