@@ -11,13 +11,13 @@ The schema validation endpoint:
 3. Schema validation: For each root (query_params, headers...):
 	I. Create an empty array of errors.
 	II. Load all required fields from the schema and check that they exist. If not => add error to array.
-    III. *validators are used with or* Iterate over object along with the corresponding schema. For each inner value:
+    III. Iterate over object along with the corresponding schema. For each inner value:
         Try to find the equivalent key in the schema (by "name"):
-		    a. if exists: load all "types" from a map which key is the type and value is the validator function that validates the value. Apply the value on all validator functions. Each function returns either success or an error. If error => states reason.
+		    a. if exists: load all "types" from a map which key is the type and value is the validator function that validates the value. Apply the value on all validator functions. Validation is successfull if at least one validator returns success. Each function returns either success or an error. If error => states reason.
 Errors are appended to the error array.
          	b. if doesn't exist: add to errors array the type "invalid object key" (with path).
     IV. Make sure that empty schema parts (like empty body) are empty in the request object as well.
-4. Return 200 OK with json... If abnormal fields exist, add the error array.
+1. Return 200 OK with json... If abnormal fields exist, add the error array.
 
 Design Considerations:
 1. Database layer should be abstracted to an interface with (currently) an in-memory implementation of schema saving and loading..

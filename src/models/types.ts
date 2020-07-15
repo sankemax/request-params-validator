@@ -34,6 +34,6 @@ export interface Predicate {
     (validate: any): boolean
 }
 
-export type Method = 'POST' | 'GET' | 'PUT' | 'PATCH' // TODO: add all methods
+export type Method = 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE'
 
 export type ID = string

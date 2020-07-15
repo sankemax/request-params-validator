@@ -2,7 +2,7 @@ import { Method } from "../models/types";
 import { Schema } from "../models/Schema";
 
 export function getId(path: string, method: Method) {
-    return `${path}${method}`; // TODO: some simple hashing needed
+    return `${path}${method}`; // simple hashing
 }
 
 export function generateIdBySchema(schema: Schema) {
