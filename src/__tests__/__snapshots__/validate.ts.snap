@@ -1,3 +1,112 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`validation tests requests should be validated against the appropriate models 1`] = `undefined`;
+exports[`validation tests requests should be validated against the appropriate models 1`] = `
+Array [
+  Object {
+    "errors": Array [],
+  },
+  Object {
+    "errors": Array [
+      Object {
+        "message": "Expected required field Authorization to exist.",
+        "path": "/users/info-GET.headers",
+      },
+    ],
+  },
+  Object {
+    "errors": Array [],
+  },
+  Object {
+    "errors": Array [],
+  },
+  Object {
+    "errors": Array [],
+  },
+  Object {
+    "errors": Array [
+      Object {
+        "message": "Expected required field firstName to exist.",
+        "path": "/users/create-POST.body",
+      },
+    ],
+  },
+  Object {
+    "errors": Array [],
+  },
+  Object {
+    "errors": Array [
+      Object {
+        "message": "Expected type String. Got UUID.",
+        "path": "/users/create-POST.body.email",
+      },
+      Object {
+        "message": "Expected type Email. Got UUID.",
+        "path": "/users/create-POST.body.email",
+      },
+    ],
+  },
+  Object {
+    "errors": Array [],
+  },
+  Object {
+    "errors": Array [],
+  },
+  Object {
+    "errors": Array [
+      Object {
+        "message": "Expected type String. Got UUID.",
+        "path": "/orders/info-GET.query_params.order_id",
+      },
+      Object {
+        "message": "Expected type UUID. Got String.",
+        "path": "/orders/info-GET.query_params.order_id",
+      },
+    ],
+  },
+  Object {
+    "errors": Array [],
+  },
+  Object {
+    "errors": Array [
+      Object {
+        "message": "Expected type Int. Got String.",
+        "path": "/orders/create-POST.body.order_type",
+      },
+    ],
+  },
+  Object {
+    "errors": Array [
+      Object {
+        "message": "Expected required field address to exist.",
+        "path": "/orders/create-POST.body",
+      },
+      Object {
+        "message": "Expected type List. Got String.",
+        "path": "/orders/create-POST.body.items",
+      },
+    ],
+  },
+  Object {
+    "errors": Array [],
+  },
+  Object {
+    "errors": Array [
+      Object {
+        "message": "Expected required field order_id to exist.",
+        "path": "/orders/update-PATCH.body",
+      },
+    ],
+  },
+  Object {
+    "errors": Array [],
+  },
+  Object {
+    "errors": Array [
+      Object {
+        "message": "Expected type Int. Got String.",
+        "path": "/orders/update-PATCH.body.order_type",
+      },
+    ],
+  },
+]
+`;
